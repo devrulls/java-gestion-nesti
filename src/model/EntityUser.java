@@ -11,6 +11,7 @@ public class EntityUser {
     private String pwd;
     private int id_role;
     private String role;
+    private String description_role;
 
     public int getId_user() {
         return id_user;
@@ -66,6 +67,12 @@ public class EntityUser {
             
     }
 
-    
+    public String getDescription_role() {
+        return description_role;
+    }
+
+    public void setDescription_role(String description_role) {
+        this.description_role = description_role;
+    }
     
 }

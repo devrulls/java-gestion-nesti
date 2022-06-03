@@ -1,12 +1,20 @@
 package controller;
 
+import database.DBConnection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import model.EncryptPassword;
+import model.EntityRole;
 import model.EntityUser;
 import model.ModelUser;
-import views.ViewRegister;
+import views.ViewNesti;
 
 /**
  *
@@ -14,11 +22,15 @@ import views.ViewRegister;
  */
 public class ControllerUser implements ActionListener {
 
-    private ViewRegister view;
+    private ViewNesti view;
     private ModelUser model;
     private EntityUser user;
+  
 
-    public ControllerUser(ViewRegister view, ModelUser model, EntityUser user) {
+    public ControllerUser() {
+    }
+
+    public ControllerUser(ViewNesti view, ModelUser model, EntityUser user) {
         this.view = view;
         this.model = model;
         this.user = user;
@@ -27,6 +39,8 @@ public class ControllerUser implements ActionListener {
         view.btn_search_user.addActionListener(this);
         view.btn_modify.addActionListener(this);
         view.btn_remove.addActionListener(this);
+        view.btn_table1.addActionListener(this);
+        view.input_searchT.addActionListener(this);
     }
 
     //iniciar
@@ -38,7 +52,9 @@ public class ControllerUser implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == view.btn_register) {
+            System.out.println("testttt");
             String pwd = new String(view.input_password.getPassword());
             String confirm_pwd = new String(view.input_confirmPassword.getPassword());
 
@@ -47,20 +63,29 @@ public class ControllerUser implements ActionListener {
 
             } else {
                 if (pwd.equals(confirm_pwd)) {
-                    String newPasswordHash = EncryptPassword.md5(pwd);
 
-                    user.setName(view.input_name.getText());
-                    user.setUsername(view.input_username.getText());
-                    user.setPwd(newPasswordHash);
-                    String value = view.combo_role.getSelectedItem().toString();
-                    user.setRole(value);
-                    if (model.save(user)) {
-                        JOptionPane.showMessageDialog(null, "User successfully registered");
-                        cleanForm();
+                    if (model.check_user_by_username(view.input_username.getText()) == 0) {
+                        String newPasswordHash = EncryptPassword.md5(pwd);
+                        user.setName(view.input_name.getText());
+                        user.setUsername(view.input_username.getText());
+                        user.setPwd(newPasswordHash);
+                        String value = view.combo_role.getSelectedItem().toString();
+                        user.setRole(value);
+                        if (model.save(user)) {
+                            JOptionPane.showMessageDialog(null, "User successfully registered");
+                            cleanForm();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Error");
+                            cleanForm();
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error");
-                        cleanForm();
+                        JOptionPane.showMessageDialog(null, "The user with the username: " + view.input_username.getText() + " already exists");
+                        view.input_username.setText(null);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Passwords do not match, please check again.");
+                    view.input_password.setText(null);
+                    view.input_confirmPassword.setText(null);
                 }
 
             }
@@ -68,7 +93,7 @@ public class ControllerUser implements ActionListener {
         }
 
         if (e.getSource() == view.btn_search_user) {
-            user.setUsername(view.input_username.getText());
+            user.setUsername(view.input_search.getText());
 
             if (model.search_by_username(user)) {
                 view.input_id.setText(String.valueOf(user.getId_user()));
@@ -80,7 +105,7 @@ public class ControllerUser implements ActionListener {
                     role = "SUPER ADMIN";
 
                 } else if (value_role == 2) {
-                    role = "SUPER ADMIN";
+                    role = "ADMIN";
                 }
                 view.combo_role.setSelectedItem(role);
             } else {
@@ -115,6 +140,67 @@ public class ControllerUser implements ActionListener {
                 cleanForm();
             }
         }
+
+        if (e.getSource() == view.btn_table1) {
+            model.load_table_users(view.table_user);
+
+        }
+
+        if (e.getSource() == view.input_searchT) {
+            String field_name = view.input_searchT.getText();
+            if (!"".equals(field_name)) {
+
+            }
+
+        }
+
+    }
+
+    public void btn_ok(JTable table_user, JTextField input_searchT) {
+        DefaultTableModel modelTable = new DefaultTableModel();
+        table_user.setModel(modelTable);
+        DBConnection conn = new DBConnection();
+        conn.getConnection();
+        String field_name = input_searchT.getText().trim();
+        String where = "";
+        if (!"".equals(field_name)) {
+            where = "WHERE name='" + field_name + "'";
+        }
+        String sql = "SELECT * FROM nesti_user " + where;
+        PreparedStatement ps;
+        ResultSet rs;
+
+        try {
+            ps = conn.getConnection().prepareStatement(sql);
+
+            rs = ps.executeQuery();
+
+            modelTable.addColumn("ID");
+            modelTable.addColumn("NAME");
+            modelTable.addColumn("USERNAME");
+            modelTable.addColumn("PASSWORD");
+            modelTable.addColumn("ROLE");
+
+            ResultSetMetaData rsMD = rs.getMetaData();
+
+            int countCols = rsMD.getColumnCount();
+            int witdh_col[] = {5, 70, 30, 160, 5};
+
+            for (int i = 0; i < countCols; i++) {
+                table_user.getColumnModel().getColumn(i).setPreferredWidth(witdh_col[i]);
+            }
+
+            while (rs.next()) {
+                Object fila[] = new Object[countCols];
+                for (int i = 0; i < countCols; i++) {
+                    fila[i] = rs.getObject(i + 1);
+                }
+                modelTable.addRow(fila);
+            }
+            conn.getConnection().close();
+        } catch (Exception ex) {
+            System.out.println("Error, " + ex);
+        }
     }
 
     public void cleanForm() {
@@ -126,6 +212,5 @@ public class ControllerUser implements ActionListener {
         view.input_confirmPassword.setText(null);
         view.combo_role.setSelectedIndex(0);
     }
-
 
 }

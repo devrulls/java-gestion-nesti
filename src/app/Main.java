@@ -1,9 +1,12 @@
 package app;
 
+import controller.ControllerLogin;
 import controller.ControllerUser;
+import model.EntityRole;
 import model.EntityUser;
 import model.ModelUser;
-import views.ViewRegister;
+import views.ViewLogin;
+import views.ViewNesti;
 
 /**
  *
@@ -15,13 +18,18 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ViewRegister viewReg = new ViewRegister();
         EntityUser user = new EntityUser();
-        ModelUser model = new ModelUser();
-        ControllerUser controller = new ControllerUser(viewReg, model, user);
 
-        controller.start();
-        viewReg.setVisible(true);
+        ModelUser model = new ModelUser();
+        ViewLogin viewLogin = new ViewLogin();
+//        ViewNesti viewNesti = new ViewNesti();
+//        ControllerUser controller = new ControllerUser(viewNesti, model, user);
+        ControllerLogin controllerLogin = new ControllerLogin(viewLogin, model, user);       
+        controllerLogin.start();
+        viewLogin.setVisible(true);
+
+//        controller.start();
+//        viewNesti.setVisible(false);
 
     }
 
