@@ -25,7 +25,6 @@ public class ControllerUser implements ActionListener {
     private ViewNesti view;
     private ModelUser model;
     private EntityUser user;
-  
 
     public ControllerUser() {
     }

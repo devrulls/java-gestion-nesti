@@ -10,7 +10,7 @@ import controller.ControllerUser;
 import model.EntityUser;
 
 public class ViewNesti extends javax.swing.JFrame {
-
+    ControllerUser  C_user = new ControllerUser();
     private EntityUser user = new EntityUser();
 
     public EntityUser getUser() {
@@ -40,22 +40,24 @@ public class ViewNesti extends javax.swing.JFrame {
         lbl_role_home.setText(user.getDescription_role());
 
         //----ROLE PRIVILEGES
-//        if (user.getId_role() == 1) {
+        if (user.getId_role() == 1) {
+
+        } else if (user.getId_role() == 2) {
+            System.out.println("Admin Role");
+            JPanel_suppliers.setVisible(false);
+            JPanel_users.setVisible(false);
+            nesti.removeTabAt(4);
+            nesti.removeTabAt(3);
+
+        }
+        
+//        if ("SUPER ADMIN".equals(user.getDescription_role())) {
 //
-//        } else if (user.getId_role() == 2) {
-//            System.out.println("tessst");
+//        } else if ("ADMIN".equals(user.getDescription_role())) {
 //            JPanel_suppliers.setVisible(false);
 //            JPanel_users.setVisible(false);
 //
 //        }
-        
-        if ("SUPER ADMIN".equals(user.getDescription_role())) {
-
-        } else if ("ADMIN".equals(user.getDescription_role())) {
-            JPanel_suppliers.setVisible(false);
-            JPanel_users.setVisible(false);
-
-        }
         
 
     }
@@ -107,7 +109,7 @@ public class ViewNesti extends javax.swing.JFrame {
         nesti.setBackground(new java.awt.Color(255, 255, 255));
         nesti.setForeground(new java.awt.Color(0, 204, 204));
 
-        JPanel_home.setBackground(new java.awt.Color(153, 153, 153));
+        JPanel_home.setBackground(new java.awt.Color(255, 255, 255));
 
         lbl_title_home.setFont(new java.awt.Font("Times New Roman", 3, 36)); // NOI18N
         lbl_title_home.setForeground(new java.awt.Color(0, 204, 204));
@@ -216,6 +218,13 @@ public class ViewNesti extends javax.swing.JFrame {
         btn_register.setFont(new java.awt.Font("Times New Roman", 3, 24)); // NOI18N
         btn_register.setForeground(new java.awt.Color(0, 204, 204));
         btn_register.setText("Register");
+        btn_register.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_registerActionPerformed(evt);
+            }
+        });
+
+        combo_role.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECT", "SUPER ADMIN", "ADMIN" }));
 
         btn_modify.setBackground(new java.awt.Color(0, 0, 0));
         btn_modify.setFont(new java.awt.Font("Times New Roman", 3, 24)); // NOI18N
@@ -387,9 +396,13 @@ public class ViewNesti extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableActionPerformed
-        ControllerUser  user = new ControllerUser();
-        user.btn_ok(table_user, input_searchT);
+        
+        C_user.btn_ok(table_user, input_searchT);
     }//GEN-LAST:event_tableActionPerformed
+
+    private void btn_registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerActionPerformed
+
+    }//GEN-LAST:event_btn_registerActionPerformed
 
 
 
