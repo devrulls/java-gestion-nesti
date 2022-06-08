@@ -58,6 +58,11 @@ public class ViewLogin extends javax.swing.JFrame {
         btn_sign_in.setFont(new java.awt.Font("Times New Roman", 3, 18)); // NOI18N
         btn_sign_in.setForeground(new java.awt.Color(0, 204, 204));
         btn_sign_in.setText("Sign In");
+        btn_sign_in.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sign_inActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
@@ -115,6 +120,10 @@ public class ViewLogin extends javax.swing.JFrame {
     private void input_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_input_usernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_input_usernameActionPerformed
+
+    private void btn_sign_inActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sign_inActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_sign_inActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
