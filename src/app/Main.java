@@ -23,10 +23,11 @@ public class Main {
         ModelUser model = new ModelUser();
         ViewLogin viewLogin = new ViewLogin();
 //        ViewNesti viewNesti = new ViewNesti();
+        viewLogin.setVisible(true);
 //        ControllerUser controller = new ControllerUser(viewNesti, model, user);
+
         ControllerLogin controllerLogin = new ControllerLogin(viewLogin, model, user);       
         controllerLogin.start();
-        viewLogin.setVisible(true);
 
 //        controller.start();
 //        viewNesti.setVisible(false);

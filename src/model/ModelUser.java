@@ -12,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
-
 /**
  *
  * @author HERNANDEZ Raul @devrulls
@@ -22,6 +21,12 @@ public class ModelUser extends DBConnection {
     PreparedStatement ps;
     ResultSet rs;
 
+    /**
+     * Permet d'enregistrer un utilisateur dans la base de données
+     * @param user
+     * @return Boolean
+     */
+    
     public boolean save(EntityUser user) {
         Connection conexion = getConnection();
 
@@ -43,7 +48,7 @@ public class ModelUser extends DBConnection {
         } finally {
             try {
                 conexion.close();
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 System.out.println("Error, " + ex);
             }
 
@@ -51,6 +56,11 @@ public class ModelUser extends DBConnection {
 
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     */
     public int check_user_by_username(String username) {
         Connection conexion = getConnection();
 
@@ -75,7 +85,7 @@ public class ModelUser extends DBConnection {
         } finally {
             try {
                 conexion.close();
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 System.out.println("Error, " + ex);
             }
 
@@ -83,6 +93,11 @@ public class ModelUser extends DBConnection {
 
     }
 
+    /**
+     * Allows you to search for a user by their nickname
+     * @param user
+     * @return un boolean 
+     */
     public boolean search_by_username(EntityUser user) {
         Connection conexion = getConnection();
 
@@ -106,13 +121,13 @@ public class ModelUser extends DBConnection {
                 JOptionPane.showMessageDialog(null, "Username does not exist ");
                 return false;
             }
-        } catch (Exception ex) {
+        } catch (HeadlessException | SQLException ex) {
             System.out.println("Error, " + ex);
             return false;
         } finally {
             try {
                 conexion.close();
-            } catch (Exception ex) {
+            } catch (SQLException ex) {
                 System.out.println("Error, " + ex);
             }
 
@@ -154,7 +169,7 @@ public class ModelUser extends DBConnection {
 
         }
     }
-    
+
     public boolean load_Jcombobox(EntityRole role) {
         Connection conexion = getConnection();
 
@@ -168,7 +183,7 @@ public class ModelUser extends DBConnection {
             while (rs.next()) {
                 role.setName(rs.getString("description_role"));
                 return true;
-            } 
+            }
         } catch (SQLException ex) {
             System.out.println("Error, " + ex);
             return false;
@@ -178,11 +193,11 @@ public class ModelUser extends DBConnection {
             } catch (SQLException ex) {
                 System.out.println("Error, " + ex);
             }
-        
+
         }
         return false;
     }
-    
+
     public boolean update(EntityUser user) {
         Connection conexion = getConnection();
 
@@ -304,9 +319,9 @@ public class ModelUser extends DBConnection {
                 array_users.add(fila);
 
             }
-           table_users.setModel((TableModel) new ControllerTableUser(array_users));
+            table_users.setModel((TableModel) new ControllerTableUser(array_users));
         } catch (SQLException ex) {
-            
+
         } finally {
             try {
                 conexion.close();

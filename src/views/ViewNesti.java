@@ -1,6 +1,8 @@
 package views;
 
 import controller.ControllerUser;
+import javax.swing.JOptionPane;
+import model.EncryptPassword;
 //import java.sql.Connection;
 //import javax.swing.table.DefaultTableModel;
 //import database.DBConnection;
@@ -8,10 +10,14 @@ import controller.ControllerUser;
 //import java.sql.ResultSet;
 //import java.sql.ResultSetMetaData;
 import model.EntityUser;
+import model.ModelUser;
 
 public class ViewNesti extends javax.swing.JFrame {
-    ControllerUser  C_user = new ControllerUser();
+
+    ControllerUser C_user = new ControllerUser();
     private EntityUser user = new EntityUser();
+
+    ModelUser model = new ModelUser();
 
     public EntityUser getUser() {
         return user;
@@ -20,16 +26,15 @@ public class ViewNesti extends javax.swing.JFrame {
     public void setUser(EntityUser user) {
         this.user = user;
     }
-    
 
     /**
      * Creates new form ViewNesti
+     *
      * @param user
      */
 //    public ViewNesti() {
 //        initComponents();
 //    }
-
     public ViewNesti(EntityUser user) {
         this.user = user;
         System.out.println(this.user.getId_role());
@@ -50,7 +55,7 @@ public class ViewNesti extends javax.swing.JFrame {
             nesti.removeTabAt(3);
 
         }
-        
+
 //        if ("SUPER ADMIN".equals(user.getDescription_role())) {
 //
 //        } else if ("ADMIN".equals(user.getDescription_role())) {
@@ -58,8 +63,19 @@ public class ViewNesti extends javax.swing.JFrame {
 //            JPanel_users.setVisible(false);
 //
 //        }
-        
+    }
 
+    /**
+     * Metodo para limpiar los valores de mi formulario
+     */
+    public void cleanForm() {
+        input_id.setText(null);
+        input_search.setText(null);
+        input_name.setText(null);
+        input_username.setText(null);
+        input_password.setText(null);
+        input_confirmPassword.setText(null);
+        combo_role.setSelectedIndex(0);
     }
 
     /**
@@ -230,16 +246,31 @@ public class ViewNesti extends javax.swing.JFrame {
         btn_modify.setFont(new java.awt.Font("Times New Roman", 3, 24)); // NOI18N
         btn_modify.setForeground(new java.awt.Color(0, 204, 204));
         btn_modify.setText("Update");
+        btn_modify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_modifyActionPerformed(evt);
+            }
+        });
 
         btn_remove.setBackground(new java.awt.Color(0, 0, 0));
         btn_remove.setFont(new java.awt.Font("Times New Roman", 3, 24)); // NOI18N
         btn_remove.setForeground(new java.awt.Color(0, 204, 204));
         btn_remove.setText("Delete");
+        btn_remove.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_removeActionPerformed(evt);
+            }
+        });
 
         btn_search_user.setBackground(new java.awt.Color(0, 0, 0));
         btn_search_user.setFont(new java.awt.Font("Times New Roman", 3, 18)); // NOI18N
         btn_search_user.setForeground(new java.awt.Color(0, 153, 153));
         btn_search_user.setText("Search");
+        btn_search_user.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_search_userActionPerformed(evt);
+            }
+        });
 
         btn_table1.setText("CargarTabla2");
 
@@ -396,14 +427,102 @@ public class ViewNesti extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void tableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableActionPerformed
-        
+
         C_user.btn_ok(table_user, input_searchT);
     }//GEN-LAST:event_tableActionPerformed
 
     private void btn_registerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_registerActionPerformed
+        System.out.println("viewNesti --- register");
+//            ModelUser model = new ModelUser();
+        String pwd = new String(input_password.getPassword());
+        String confirm_pwd = new String(input_confirmPassword.getPassword());
 
+        if (input_name.getText().equals("") || input_username.getText().equals("") || pwd.equals("") || confirm_pwd.equals("")) {
+            JOptionPane.showMessageDialog(null, "please complete all fields");
+
+        } else {
+            if (pwd.equals(confirm_pwd)) {
+
+                if (model.check_user_by_username(input_username.getText()) == 0) {
+                    String newPasswordHash = EncryptPassword.md5(pwd);
+                    user.setName(input_name.getText());
+                    user.setUsername(input_username.getText());
+                    user.setPwd(newPasswordHash);
+                    String value = combo_role.getSelectedItem().toString();
+                    user.setRole(value);
+                    if (model.save(user)) {
+                        JOptionPane.showMessageDialog(null, "User successfully registered");
+                        cleanForm();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Error");
+                        cleanForm();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "The user with the username: " + input_username.getText() + " already exists");
+                    input_username.setText(null);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Passwords do not match, please check again.");
+                input_password.setText(null);
+                input_confirmPassword.setText(null);
+            }
+
+        }
     }//GEN-LAST:event_btn_registerActionPerformed
 
+    private void btn_modifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_modifyActionPerformed
+        user.setId_user(Integer.parseInt(input_id.getText()));
+        user.setName(input_name.getText());
+        user.setUsername(input_username.getText());
+        user.setPwd(String.valueOf(input_password.getPassword()));
+        String value = combo_role.getSelectedItem().toString();
+        user.setRole(value);
+        if (model.update(user)) {
+            JOptionPane.showMessageDialog(null, "user sucessfully modified");
+            cleanForm();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error");
+            //cleanForm();
+        }
+    }//GEN-LAST:event_btn_modifyActionPerformed
+
+    private void btn_search_userActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_search_userActionPerformed
+        user.setUsername(input_search.getText());
+
+        if (model.search_by_username(user)) {
+            input_id.setText(String.valueOf(user.getId_user()));
+            input_name.setText(user.getName());
+            input_username.setText(user.getUsername());
+            int value_role = user.getId_role();
+            String role = "";
+            if (value_role == 1) {
+                role = "SUPER ADMIN";
+
+            } else if (value_role == 2) {
+                role = "ADMIN";
+            }
+            combo_role.setSelectedItem(role);
+        } else {
+            JOptionPane.showMessageDialog(null, "Username does not exist ");
+            cleanForm();
+        }
+
+//        EntityUser user_login = this.getUser();
+//        
+//        System.out.println(user_login);
+//        C_user.search_user(user);
+    }//GEN-LAST:event_btn_search_userActionPerformed
+
+    private void btn_removeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_removeActionPerformed
+        user.setId_user(Integer.parseInt(input_id.getText()));
+        if (model.delete(user)) {
+            JOptionPane.showMessageDialog(null, "User successfully deleted");
+            cleanForm();
+        } else {
+            JOptionPane.showMessageDialog(null, "Error");
+            cleanForm();
+        }
+    }//GEN-LAST:event_btn_removeActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
